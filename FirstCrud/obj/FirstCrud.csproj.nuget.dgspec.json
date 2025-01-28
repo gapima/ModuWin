@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Padrao_win10\\source\\repos\\FirstCrud\\FirstCrud.csproj": {}
+    "C:\\Users\\Padrao_win10\\source\\repos\\ModuWin\\FirstCrud\\FirstCrud.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Padrao_win10\\source\\repos\\FirstCrud\\FirstCrud.csproj": {
+    "C:\\Users\\Padrao_win10\\source\\repos\\ModuWin\\FirstCrud\\FirstCrud.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Padrao_win10\\source\\repos\\FirstCrud\\FirstCrud.csproj",
+        "projectUniqueName": "C:\\Users\\Padrao_win10\\source\\repos\\ModuWin\\FirstCrud\\FirstCrud.csproj",
         "projectName": "FirstCrud",
-        "projectPath": "C:\\Users\\Padrao_win10\\source\\repos\\FirstCrud\\FirstCrud.csproj",
+        "projectPath": "C:\\Users\\Padrao_win10\\source\\repos\\ModuWin\\FirstCrud\\FirstCrud.csproj",
         "packagesPath": "C:\\Users\\Padrao_win10\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Padrao_win10\\source\\repos\\FirstCrud\\obj\\",
+        "outputPath": "C:\\Users\\Padrao_win10\\source\\repos\\ModuWin\\FirstCrud\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Padrao_win10\\AppData\\Roaming\\NuGet\\NuGet.Config",

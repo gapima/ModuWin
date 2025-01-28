@@ -21,11 +21,9 @@ namespace FirstCrud.Data
         {
             using (var connection = DbConnectionHelper.GetConnection())
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("@Desc_Cor", cor.Desc_Cor);
-                parameters.Add("@Id", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                var parameters = new { V_Id_Cor = 30, V_Desc_Cor = cor.Desc_Cor };
                 connection.Execute("sc_Ger_I_cor", parameters, commandType: CommandType.StoredProcedure);
-                return parameters.Get<int>("@Id");
+                return 0;
             }
         }
 
@@ -33,7 +31,7 @@ namespace FirstCrud.Data
         {
             using (var connection = DbConnectionHelper.GetConnection())
             {
-                var parameters = new { cor.Id_Cor, cor.Desc_Cor };
+                var parameters = new { V_Id_Cor = cor.Id_Cor, V_Desc_Cor = cor.Desc_Cor };
                 connection.Execute("sc_Ger_u_cor", parameters, commandType: CommandType.StoredProcedure);
             }
         }

@@ -1,7 +1,6 @@
 ﻿using FirstCrud.Business;
 using FirstCrud.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -24,14 +23,13 @@ namespace FirstCrud.UI
 
         private void AtualizarGrid()
         {
-            // Reseta o DataSource
             dataGridView1.DataSource = null;
 
-            // Obtém os dados
+            // Obtém os dados e atribui ao DataGridView
             var cores = _service.ObterTodasCores();
             dataGridView1.DataSource = cores;
 
-            // Adiciona a coluna de checkbox se não existir
+            // Adiciona a coluna de checkbox, se não existir
             if (!dataGridView1.Columns.Contains("Selecionar"))
             {
                 DataGridViewCheckBoxColumn checkBoxColumn = new DataGridViewCheckBoxColumn
@@ -40,100 +38,80 @@ namespace FirstCrud.UI
                     Name = "Selecionar",
                     Width = 50
                 };
-                dataGridView1.Columns.Insert(0, checkBoxColumn); // Insere como a primeira coluna
+                dataGridView1.Columns.Insert(0, checkBoxColumn); // Insere a coluna como a primeira
             }
+
+            // Permite edição no DataGridView
+            dataGridView1.Columns["Id_Cor"].ReadOnly = true; // O ID não pode ser editado
+            dataGridView1.Columns["Desc_Cor"].ReadOnly = false; // A descrição pode ser editada
         }
 
         private void btnSalvar_Click(object sender, EventArgs e)
         {
-            // Verifica se o campo ID está vazio (nova inserção ou atualização)
-            if (string.IsNullOrWhiteSpace(txtIdCor.Text))
-            {
-                // Adiciona uma nova cor
-                var novaCor = new Cor { Desc_Cor = txtDescCor.Text };
-                _service.AdicionarCor(novaCor);
-                MessageBox.Show("Cor adicionada com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                // Atualiza a cor existente
-                if (int.TryParse(txtIdCor.Text, out int idCor))
-                {
-                    var corAtualizada = new Cor
-                    {
-                        Id_Cor = idCor,
-                        Desc_Cor = txtDescCor.Text
-                    };
-                    _service.AtualizarCor(corAtualizada);
-                    MessageBox.Show("Cor atualizada com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show("ID inválido.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-
-            // Atualiza o grid e limpa os campos
-            AtualizarGrid();
-            LimparCampos();
-        }
-
-        private void LimparCampos()
-        {
-            txtIdCor.Text = string.Empty;
-            txtDescCor.Text = string.Empty;
-            txtIdCor.Enabled = false;
-            txtDescCor.Enabled = false;
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Verifica se a célula clicada pertence à coluna de checkbox
-            if (e.ColumnIndex == dataGridView1.Columns["Selecionar"].Index && e.RowIndex >= 0)
-            {
-                var row = dataGridView1.Rows[e.RowIndex];
-                bool isChecked = Convert.ToBoolean(row.Cells["Selecionar"].Value ?? false);
-                row.Cells["Selecionar"].Value = !isChecked;
-
-                if (!isChecked)
-                {
-                    // Carrega os valores da linha selecionada nos campos de texto
-                    txtIdCor.Text = row.Cells["Id_Cor"].Value.ToString();
-                    txtDescCor.Text = row.Cells["Desc_Cor"].Value.ToString();
-
-                    txtIdCor.Enabled = false; // Desabilita edição do ID
-                    txtDescCor.Enabled = true;
-
-                    // Desmarca os checkboxes das outras linhas
-                    foreach (DataGridViewRow otherRow in dataGridView1.Rows)
-                    {
-                        if (otherRow != row)
-                        {
-                            otherRow.Cells["Selecionar"].Value = false;
-                        }
-                    }
-                }
-                else
-                {
-                    // Limpa os campos caso a linha seja desmarcada
-                    LimparCampos();
-                }
-            }
-        }
-
-        private void btnExcluir_Click(object sender, EventArgs e)
-        {
-            // Itera pelas linhas e verifica os checkboxes
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 var isChecked = Convert.ToBoolean(row.Cells["Selecionar"].Value);
                 if (isChecked)
                 {
-                    var cor = (Cor)row.DataBoundItem;
-                    _service.ExcluirCor(cor.Id_Cor);
+                    var idCorCell = row.Cells["Id_Cor"].Value;
+                    var descCorCell = row.Cells["Desc_Cor"].Value;
+
+                    if (idCorCell != null && int.TryParse(idCorCell.ToString(), out int idCor))
+                    {
+                        // Atualiza a cor existente
+                        var corAtualizada = new Cor
+                        {
+                            Id_Cor = idCor,
+                            Desc_Cor = descCorCell?.ToString() ?? string.Empty
+                        };
+                        _service.AtualizarCor(corAtualizada);
+                    }
                 }
             }
+
+            MessageBox.Show("Dados atualizados com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AtualizarGrid();
+        }
+
+        private void btnAdicionar_Click(object sender, EventArgs e)
+        {
+            // Obtém a nova cor do TextBox
+            var novaCorDescricao = txtNewColor.Text.Trim();
+
+            if (!string.IsNullOrWhiteSpace(novaCorDescricao))
+            {
+                var novaCor = new Cor { Desc_Cor = novaCorDescricao };
+                _service.AdicionarCor(novaCor);
+
+                MessageBox.Show("Nova cor adicionada com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Limpa o TextBox e atualiza o grid
+                txtNewColor.Clear();
+                AtualizarGrid();
+            }
+            else
+            {
+                MessageBox.Show("A descrição da cor não pode estar vazia.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnExcluir_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                var isChecked = Convert.ToBoolean(row.Cells["Selecionar"].Value);
+                if (isChecked)
+                {
+                    var idCorCell = row.Cells["Id_Cor"].Value;
+
+                    if (idCorCell != null && int.TryParse(idCorCell.ToString(), out int idCor))
+                    {
+                        _service.ExcluirCor(idCor);
+                    }
+                }
+            }
+
+            MessageBox.Show("Dados excluídos com sucesso!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
             AtualizarGrid();
         }
     }
